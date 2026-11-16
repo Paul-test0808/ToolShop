@@ -13,6 +13,8 @@ export class ProductPage extends BasePage {
     this.increaseQuantityButton = page.getByTestId('increase-quantity');
     this.decreaseQuantityButton = page.getByTestId('decrease-quantity');
     this.addToCartButton = page.getByTestId('add-to-cart');
+    /** "Out of stock" label; when shown, the quantity controls and Add to cart are disabled. */
+    this.outOfStock = page.getByTestId('out-of-stock');
     /** Action buttons in DOM order: Add to cart, Add to favourites, Compare. */
     this.actionButtons = page.getByTestId(/^add-to-(cart|favorites|compare)$/);
   }
@@ -25,6 +27,26 @@ export class ProductPage extends BasePage {
   async expectLoaded() {
     await expect(this.page).toHaveURL((url) => /^\/product\/\w+$/.test(url.pathname));
     await this.waitForLoaded();
+  }
+
+  /** @param {string} id product id from the API */
+  async openById(id) {
+    await this.page.goto(`/product/${id}`);
+    await this.expectLoaded();
+  }
+
+  async expectInStock() {
+    await expect(this.outOfStock, 'product should be in stock to change its quantity').toBeHidden();
+  }
+
+  async expectOutOfStock() {
+    await expect(this.outOfStock).toHaveText('Out of stock');
+  }
+
+  async expectQuantityLocked() {
+    await expect(this.decreaseQuantityButton).toBeDisabled();
+    await expect(this.quantity).toBeDisabled();
+    await expect(this.increaseQuantityButton).toBeDisabled();
   }
 
   /** @param {number} times */

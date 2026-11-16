@@ -2,6 +2,7 @@
 import { expect } from '@playwright/test';
 import { BasePage } from './BasePage.js';
 import { ProductGrid } from './components/ProductGrid.js';
+import { Filters } from './components/Filters.js';
 
 export class HomePage extends BasePage {
   path = '/';
@@ -10,6 +11,7 @@ export class HomePage extends BasePage {
   constructor(page) {
     super(page);
     this.products = new ProductGrid(page);
+    this.filters = new Filters(page, this.products);
     this.sortSelect = page.getByTestId('sort');
     this.selectedSortOption = this.sortSelect.locator('option:checked');
     this.searchInput = page.getByTestId('search-query');
