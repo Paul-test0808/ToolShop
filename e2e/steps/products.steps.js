@@ -100,6 +100,63 @@ Then(
   },
 );
 
+/* ---------- Filters ---------- */
+
+When('I filter by category {string}', async ({ homePage }, name) => {
+  await homePage.filters.checkCategory(name);
+});
+
+When('I remove the category filter {string}', async ({ homePage }, name) => {
+  await homePage.filters.uncheckCategory(name);
+});
+
+When('I filter by brand {string}', async ({ homePage }, name) => {
+  await homePage.filters.checkBrand(name);
+});
+
+When('I show only eco-friendly products', async ({ homePage }) => {
+  await homePage.filters.checkEcoFriendly();
+});
+
+When('I set the maximum price to {int}', async ({ homePage }, max) => {
+  await homePage.filters.setMaxPrice(max);
+});
+
+Then('these category filters should be selected:', async ({ homePage }, table) => {
+  for (const name of table.raw().flat()) await expect(homePage.filters.category(name)).toBeChecked();
+});
+
+Then('only products from the category {string} should be shown', async ({ homePage }, name) => {
+  await homePage.filters.expectEveryResult((p) => p.category.name === name, `in category "${name}"`);
+});
+
+Then('only products from these categories should be shown:', async ({ homePage }, table) => {
+  const names = table.raw().flat();
+  await homePage.filters.expectEveryResult((p) => names.includes(p.category.name), `in ${names.join('/')}`);
+});
+
+Then('products from categories other than {string} should be shown', async ({ homePage }, name) => {
+  await homePage.filters.expectSomeResult((p) => p.category.name !== name, `outside category "${name}"`);
+});
+
+Then('only products of the brand {string} should be shown', async ({ homePage }, name) => {
+  await homePage.filters.expectEveryResult((p) => p.brand.name === name, `of brand "${name}"`);
+});
+
+Then('only eco-friendly products should be shown', async ({ homePage }) => {
+  await homePage.filters.expectEveryResult((p) => p.is_eco_friendly, 'eco-friendly');
+});
+
+Then('every product price should be at most {int}', async ({ homePage }, max) => {
+  // Each slider step fires a new request, so retry until the grid settles on the final range.
+  await expect
+    .poll(async () => {
+      const prices = await homePage.products.productPrices();
+      return prices.length > 0 && prices.every((p) => p <= max);
+    }, { message: `every product price should be at most ${max}`, timeout: 10_000 })
+    .toBe(true);
+});
+
 /* ---------- Product details ---------- */
 
 When('I open the {string} product', async ({ homePage }, name) => {
