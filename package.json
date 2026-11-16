@@ -1,0 +1,22 @@
+{
+  "name": "toolshop-e2e",
+  "version": "1.0.0",
+  "description": "Playwright + Gherkin (playwright-bdd) + POM tests for practicesoftwaretesting.com",
+  "main": "index.js",
+  "scripts": {
+    "bddgen": "bddgen",
+    "test": "bddgen && playwright test",
+    "test:smoke": "bddgen && playwright test --grep @smoke",
+    "test:headed": "bddgen && playwright test --headed",
+    "test:ui": "bddgen && playwright test --ui",
+    "report": "playwright show-report"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6",
+    "playwright-bdd": "^9.2.1"
+  }
+}
