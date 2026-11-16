@@ -16,8 +16,16 @@ Feature: Product details
     And I should see the buttons "Add to cart", "Add to favourites" and "Compare"
 
   Scenario: Change the quantity
-    Given I am on the "Combination Pliers" product page
+    Given I am on the page of an in-stock product
+    And the product should be in stock
     When I increase the quantity 2 times
     Then the quantity should be 3
     When I decrease the quantity 1 time
     Then the quantity should be 2
+
+  Scenario: Quantity cannot be changed for an out-of-stock product
+    Given I am on the page of an out-of-stock product
+    Then the product should be marked as out of stock
+    And the quantity should be 1
+    And the quantity should not be changeable
+    And I should not be able to add the product to the cart

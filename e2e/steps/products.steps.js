@@ -1,6 +1,7 @@
 // @ts-check
 import { expect } from '@playwright/test';
 import { Given, When, Then } from '../fixtures/fixtures.js';
+import { findProductByStock } from '../support/productsApi.js';
 
 /* ---------- Product grid ---------- */
 
@@ -121,6 +122,30 @@ Then('the product price should be {string}', async ({ productPage }, price) => {
 
 Then('the product description should not be empty', async ({ productPage }) => {
   await expect(productPage.description).toHaveText(/\S/);
+});
+
+Given(
+  /^I am on the page of an? (in-stock|out-of-stock) product$/,
+  async ({ productPage, request, baseURL }, stock) => {
+    const product = await findProductByStock(request, baseURL, stock === 'in-stock');
+    await productPage.openById(product.id);
+  },
+);
+
+Then('the product should be in stock', async ({ productPage }) => {
+  await productPage.expectInStock();
+});
+
+Then('the product should be marked as out of stock', async ({ productPage }) => {
+  await productPage.expectOutOfStock();
+});
+
+Then('the quantity should not be changeable', async ({ productPage }) => {
+  await productPage.expectQuantityLocked();
+});
+
+Then('I should not be able to add the product to the cart', async ({ productPage }) => {
+  await expect(productPage.addToCartButton).toBeDisabled();
 });
 
 Then('the quantity should be {int}', async ({ productPage }, quantity) => {
