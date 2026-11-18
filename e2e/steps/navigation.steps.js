@@ -31,9 +31,16 @@ When('I open the {string} category from the header', async ({ homePage }, catego
 /* ---------- Then: location ---------- */
 
 Then(
-  /^I should be on the (Home|Login|Contact|product) page$/,
-  async ({ homePage, loginPage, contactPage, productPage }, name) => {
-    const pages = { Home: homePage, Login: loginPage, Contact: contactPage, product: productPage };
+  /^I should be on the (Home|Login|Contact|product|Registration|My account) page$/,
+  async ({ homePage, loginPage, contactPage, productPage, registerPage, accountPage }, name) => {
+    const pages = {
+      Home: homePage,
+      Login: loginPage,
+      Contact: contactPage,
+      product: productPage,
+      Registration: registerPage,
+      'My account': accountPage,
+    };
     await pages[/** @type {keyof typeof pages} */ (name)].expectLoaded();
   },
 );
