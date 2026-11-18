@@ -10,7 +10,8 @@ export class ProductGrid {
     this.names = page.getByTestId('product-name');
     this.prices = page.getByTestId('product-price');
     this.noResults = page.getByTestId('no-results');
-    this.pagination = page.locator('.pagination');
+    /** Page-number bar: the (unnamed) navigation landmark that holds the "Next" button. */
+    this.pagination = page.getByRole('navigation').filter({ has: page.getByTestId('pagination-next') });
   }
 
   async waitForProducts() {

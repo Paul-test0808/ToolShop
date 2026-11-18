@@ -35,7 +35,7 @@ export class RegisterPage extends BasePage {
     this.submitButton = page.getByTestId('register-submit');
     /** Form-level error, e.g. "A customer with this email address already exists." */
     this.formError = page.getByTestId('register-error');
-    this.visibleFieldErrors = this.form.locator('[data-test$="-error"]:visible');
+    this.visibleFieldErrors = this.form.locator('[data-test$="-error"]').visible();
 
     // The postcode lookup is debounced per field, so typing postcode + house number quickly queues
     // two lookups. Track them to know when the address has stopped changing.
