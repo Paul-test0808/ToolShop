@@ -22,6 +22,7 @@ import { CartPage } from '../pages/CartPage.js';
  * @property {AccountPage} accountPage
  * @property {CartPage} cartPage
  * @property {Record<string, any>} ctx
+ * @property {void} cloudflareGuard
  */
 
 /** @type {import('@playwright/test').Fixtures<AppFixtures, {}, import('@playwright/test').PlaywrightTestArgs>} */
@@ -38,6 +39,32 @@ const appFixtures = {
   cartPage: async ({ page }, use) => use(new CartPage(page)),
   /** Per-scenario state shared between steps. */
   ctx: async ({}, use) => use({}),
+
+  /**
+   * Runs for every test. The public site sits behind Cloudflare, which sometimes answers a page load with a
+   * "Verify you are human" check (403 + `cf-mitigated: challenge`) — mostly on data-centre machines such as
+   * GitHub runners. No test can pass that, so name it in the failure instead of leaving a vague timeout.
+   */
+  cloudflareGuard: [
+    async ({ page }, use, testInfo) => {
+      /** @type {string[]} */
+      const blocked = [];
+      page.on('response', (response) => {
+        if (response.headers()['cf-mitigated'] === 'challenge') blocked.push(new URL(response.url()).pathname);
+      });
+
+      await use();
+
+      if (!blocked.length) return;
+      const message =
+        `Blocked by the Cloudflare bot check ("Verify you are human") when loading ${blocked.join(', ')}. ` +
+        'This is an environment problem (the site does not trust this machine, e.g. a GitHub runner), ' +
+        'not a product or test bug.';
+      testInfo.annotations.push({ type: 'blocked-by-cloudflare', description: message });
+      if (testInfo.status !== testInfo.expectedStatus) throw new Error(message);
+    },
+    { auto: true },
+  ],
 };
 
 export const test = base.extend(appFixtures);
