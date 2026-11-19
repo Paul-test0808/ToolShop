@@ -33,10 +33,12 @@ export class HomePage extends BasePage {
 
   async resetSearch() {
     await this.searchReset.click();
+    await expect(this.searchInput, 'reset should clear the search box').toHaveValue('');
   }
 
   /** @param {string} label Visible option text, e.g. "Price (Low - High)". */
   async sortBy(label) {
     await this.sortSelect.selectOption({ label });
+    await expect(this.selectedSortOption).toHaveText(label);
   }
 }

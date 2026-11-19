@@ -49,6 +49,7 @@ export class ProductGrid {
   /** @param {string} name */
   async openProduct(name) {
     await this.card(name).click();
+    await expect(this.page, `"${name}" should open its product page`).toHaveURL((url) => url.pathname.startsWith('/product/'));
   }
 }
 

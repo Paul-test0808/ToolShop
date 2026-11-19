@@ -51,11 +51,22 @@ export class ProductPage extends BasePage {
 
   /** @param {number} times */
   async increaseQuantity(times = 1) {
-    for (let i = 0; i < times; i++) await this.increaseQuantityButton.click();
+    for (let i = 0; i < times; i++) await this.#clickQuantity(this.increaseQuantityButton, +1);
   }
 
   /** @param {number} times */
   async decreaseQuantity(times = 1) {
-    for (let i = 0; i < times; i++) await this.decreaseQuantityButton.click();
+    for (let i = 0; i < times; i++) await this.#clickQuantity(this.decreaseQuantityButton, -1);
+  }
+
+  /**
+   * Clicks +/- once and proves the quantity moved by exactly one (it never goes below 1).
+   * @param {import('@playwright/test').Locator} button
+   * @param {1 | -1} delta
+   */
+  async #clickQuantity(button, delta) {
+    const before = Number(await this.quantity.inputValue());
+    await button.click();
+    await expect(this.quantity).toHaveValue(String(Math.max(1, before + delta)));
   }
 }

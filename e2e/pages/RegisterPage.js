@@ -118,10 +118,31 @@ export class RegisterPage extends BasePage {
         await expect(input, `${label} should stay empty after the address lookup`).toHaveValue('');
       } else if (!(await input.inputValue())) await input.fill(own[/** @type {keyof typeof own} */ (label)]);
     }
+
+    await this.expectFilled(values, c.country, skip);
   }
 
+  /**
+   * Proves the form holds what we typed, and the skipped field is really empty.
+   * @param {Record<string, string>} values label -> typed value
+   * @param {string} country
+   * @param {string} [skip]
+   */
+  async expectFilled(values, country, skip) {
+    for (const [label, value] of Object.entries({ ...values, Country: country })) {
+      if (label !== skip) await expect(this.field(label), `${label} should keep its value`).toHaveValue(value);
+    }
+    for (const label of LOOKUP_FIELDS) {
+      if (label !== skip) await expect(this.field(label), `${label} should be filled`).not.toHaveValue('');
+    }
+    if (skip) await expect(this.field(skip), `${skip} should be empty`).toHaveValue('');
+  }
+
+  /** Clicks Register and proves the page reacted: it moved to Login, or it shows an error. */
   async submit() {
     await this.submitButton.click();
+    const reaction = this.page.getByTestId('login-form').or(this.formError).or(this.visibleFieldErrors);
+    await expect(reaction.first(), 'Register should either succeed or show an error').toBeVisible();
   }
 
   /** @param {import('../support/testData.js').Customer} customer */
