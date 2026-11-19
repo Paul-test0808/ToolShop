@@ -1,5 +1,6 @@
 // @ts-check
 import { expect } from '@playwright/test';
+import { exactText } from '../../support/text.js';
 
 /** Product cards grid used on the home and category pages. */
 export class ProductGrid {
@@ -21,7 +22,7 @@ export class ProductGrid {
   /** @param {string} name exact product name */
   card(name) {
     return this.cards.filter({
-      has: this.page.getByTestId('product-name').filter({ hasText: new RegExp(`^\\s*${escapeRegExp(name)}\\s*$`) }),
+      has: this.page.getByTestId('product-name').filter({ hasText: exactText(name) }),
     });
   }
 
@@ -51,9 +52,4 @@ export class ProductGrid {
     await this.card(name).click();
     await expect(this.page, `"${name}" should open its product page`).toHaveURL((url) => url.pathname.startsWith('/product/'));
   }
-}
-
-/** @param {string} s */
-function escapeRegExp(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

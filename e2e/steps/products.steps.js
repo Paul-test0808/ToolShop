@@ -184,8 +184,10 @@ Then('the product description should not be empty', async ({ productPage }) => {
 Given(
   /^I am on the page of an? (in-stock|out-of-stock) product$/,
   async ({ productPage, request, baseURL }, stock) => {
-    const product = await findProductByStock(request, baseURL, stock === 'in-stock');
+    const inStock = stock === 'in-stock';
+    const product = await findProductByStock(request, baseURL, inStock);
     await productPage.openById(product.id);
+    await (inStock ? productPage.expectInStock() : productPage.expectOutOfStock());
   },
 );
 
