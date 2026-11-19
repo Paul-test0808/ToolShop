@@ -17,6 +17,14 @@ export class ProductPage extends BasePage {
     this.outOfStock = page.getByTestId('out-of-stock');
     /** Action buttons in DOM order: Add to cart, Add to favourites, Compare. */
     this.actionButtons = page.getByTestId(/^add-to-(cart|favorites|compare)$/);
+    /** Pop-up confirmation; several can be on screen at once after quick adds. */
+    this.addedToCartMessage = page.getByText('Product added to shopping cart.');
+  }
+
+  /** Clicks "Add to cart" and proves the shop confirmed it. */
+  async addToCart() {
+    await this.addToCartButton.click();
+    await expect(this.addedToCartMessage.first(), 'shop should confirm the product was added').toBeVisible();
   }
 
   async waitForLoaded() {

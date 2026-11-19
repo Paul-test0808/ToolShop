@@ -13,3 +13,6 @@ cucumber-report/
 
 # Claude Code
 .claude/
+
+# Local test output
+results.txt

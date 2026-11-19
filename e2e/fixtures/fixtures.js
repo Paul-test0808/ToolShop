@@ -8,6 +8,7 @@ import { ContactPage } from '../pages/ContactPage.js';
 import { ProductPage } from '../pages/ProductPage.js';
 import { RegisterPage } from '../pages/RegisterPage.js';
 import { AccountPage } from '../pages/AccountPage.js';
+import { CartPage } from '../pages/CartPage.js';
 
 /**
  * @typedef {object} AppFixtures
@@ -19,6 +20,7 @@ import { AccountPage } from '../pages/AccountPage.js';
  * @property {ProductPage} productPage
  * @property {RegisterPage} registerPage
  * @property {AccountPage} accountPage
+ * @property {CartPage} cartPage
  * @property {Record<string, any>} ctx
  */
 
@@ -33,6 +35,7 @@ const appFixtures = {
   productPage: async ({ page }, use) => use(new ProductPage(page)),
   registerPage: async ({ page }, use) => use(new RegisterPage(page)),
   accountPage: async ({ page }, use) => use(new AccountPage(page)),
+  cartPage: async ({ page }, use) => use(new CartPage(page)),
   /** Per-scenario state shared between steps. */
   ctx: async ({}, use) => use({}),
 };

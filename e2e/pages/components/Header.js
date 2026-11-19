@@ -11,6 +11,10 @@ export class Header {
     this.contactLink = root.getByTestId('nav-contact');
     this.signInLink = root.getByTestId('nav-sign-in');
     this.languageMenu = root.getByTestId('language-select');
+    /** Cart link; only shown while the cart has products. */
+    this.cartLink = root.getByTestId('nav-cart');
+    /** Red bubble on the cart link with the number of items in the cart. */
+    this.cartQuantity = root.getByTestId('cart-quantity');
     /** Top-level links in DOM order: Home, Categories, Contact, Sign in. */
     this.mainLinks = root.getByTestId(/^nav-(home|categories|contact|sign-in)$/);
     /** Items inside the Categories dropdown. */
@@ -30,6 +34,11 @@ export class Header {
   async goToSignIn() {
     await this.signInLink.click();
     await this.#expectPath('/auth/login');
+  }
+
+  async openCart() {
+    await this.cartLink.click();
+    await this.#expectPath('/checkout');
   }
 
   async openCategoriesMenu() {
