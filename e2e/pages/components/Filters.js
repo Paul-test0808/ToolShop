@@ -49,21 +49,33 @@ export class Filters {
 
   /** @param {string} name */
   async checkCategory(name) {
-    await this.category(name).check();
+    await this.#toggle(this.category(name), true);
   }
 
   /** @param {string} name */
   async uncheckCategory(name) {
-    await this.category(name).uncheck();
+    await this.#toggle(this.category(name), false);
   }
 
   /** @param {string} name */
   async checkBrand(name) {
-    await this.brand(name).check();
+    await this.#toggle(this.brand(name), true);
   }
 
   async checkEcoFriendly() {
-    await this.ecoFriendly.check();
+    await this.#toggle(this.ecoFriendly, true);
+  }
+
+  /**
+   * Ticks/unticks a filter and proves it took effect: the box changed and the shop requested a new product list.
+   * @param {import('@playwright/test').Locator} box
+   * @param {boolean} on
+   */
+  async #toggle(box, on) {
+    const reloaded = this.page.waitForResponse((r) => new URL(r.url()).pathname === '/products');
+    await box.setChecked(on);
+    await expect(box).toBeChecked({ checked: on });
+    expect((await reloaded).ok(), 'filtered product list should load').toBe(true);
   }
 
   /**
@@ -74,10 +86,10 @@ export class Filters {
     await this.maxPriceHandle.focus();
     for (let i = 0; i < 250; i++) {
       const now = Number(await this.maxPriceHandle.getAttribute('aria-valuenow'));
-      if (now === value) return;
+      if (now === value) break;
       await this.maxPriceHandle.press(now > value ? 'ArrowLeft' : 'ArrowRight');
     }
-    throw new Error(`Could not move the max price handle to ${value}`);
+    await expect(this.maxPriceHandle, `max price should be ${value}`).toHaveAttribute('aria-valuenow', String(value));
   }
 
   /**

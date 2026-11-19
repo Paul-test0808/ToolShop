@@ -31,6 +31,7 @@ When('I fill the registration form with {string} set to {string}', async ({ regi
   ctx.customer = newCustomer();
   await registerPage.fill(ctx.customer);
   await registerPage.field(field).fill(value);
+  await expect(registerPage.field(field)).toHaveValue(value);
 });
 
 When('I submit the registration form', async ({ registerPage }) => {
@@ -51,6 +52,9 @@ When('I register again with the same email', async ({ registerPage, ctx }) => {
 
 When('I log in with my new account', async ({ loginPage, ctx }) => {
   await loginPage.login(ctx.customer);
+  await expect(loginPage.page, 'a valid login should leave the Login page').not.toHaveURL(
+    (url) => url.pathname === loginPage.path,
+  );
 });
 
 Then('I should see the registration form', async ({ registerPage }) => {
